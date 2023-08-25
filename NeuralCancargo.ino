@@ -1,7 +1,7 @@
 #include <math.h>
 const int PatternCount = 10;
 const int InputNodes = 1;
-const int HiddenNodes = 10;
+const int HiddenNodes = 8;
 const int OutputNodes = 2;
 const float LearningRate = 0.3;
 const float Momentum = 0.9;
