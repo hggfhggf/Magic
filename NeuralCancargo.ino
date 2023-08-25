@@ -1,4 +1,24 @@
 #include <math.h>
+#include <NewPing.h>
+#include <BTS7960.h>
+#include <Servo.h>
+#define RPWM 5
+#define LPWM 6
+#define EN 7     
+#define servoPin 4
+#define trigPin 10
+#define echoPin 11
+#define MAXD 400
+const int obt = 60;
+const int rdc = 10;
+BTS7960 mainMotor(EN, LPWM, RPWM);
+Servo myservo;
+NewPing sonar(trigPin, echoPin, MAXD);
+float duration, distance;
+int iterations = 10;
+int servoAngle = 90;
+int turnDelay = 500;
+int speed = 255;
 const int PatternCount = 10;
 const int InputNodes = 1;
 const int HiddenNodes = 8;
@@ -68,7 +88,6 @@ void loop (){
 
   for( i = 0 ; i < HiddenNodes ; i++ ) {    
     for( j = 0 ; j <= InputNodes ; j++ ) { 
-      ChangeHiddenWeights[j][i] = 0.0 ;
       Rando = float(random(100))/100;
       HiddenWeights[j][i] = 2.0 * ( Rando - 0.5 ) * InitialWeightMax ;
     }
@@ -83,13 +102,10 @@ void loop (){
       OutputWeights[j][i] = 2.0 * ( Rando - 0.5 ) * InitialWeightMax ;
     }
   }
-  Serial.println("Initial/Untrained Outputs: ");
   toTerminal();
 
 
   for( TrainingCycle = 1 ; TrainingCycle < 2147483647 ; TrainingCycle++) {    
-
-
 
     for( p = 0 ; p < PatternCount ; p++) {
       q = random(PatternCount);
@@ -97,6 +113,7 @@ void loop (){
       RandomizedIndex[p] = RandomizedIndex[q] ; 
       RandomizedIndex[q] = r ;
     }
+  
     Error = 0.0 ;
 
     for( q = 0 ; q < PatternCount ; q++ ) {    
@@ -214,8 +231,8 @@ void toTerminal()
     }
     Serial.print ("  Output ");
     for( i = 0 ; i < OutputNodes ; i++ ) {       
-      Serial.print (Output[i], 5);
-      Serial.print (" ");
+      mainMotor.TurnRight(Output[0]);
+      myservo.write(Output[1]);
     }
   }
 }
